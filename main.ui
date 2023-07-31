@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1145</width>
-    <height>885</height>
+    <width>1192</width>
+    <height>788</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>60</y>
       <width>183</width>
       <height>371</height>
@@ -259,7 +259,7 @@
    <widget class="QWidget" name="formLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>440</y>
       <width>181</width>
       <height>54</height>
@@ -287,27 +287,38 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="stop_pushButton">
-       <property name="text">
-        <string>Stop</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>200</x>
       <y>30</y>
       <width>711</width>
-      <height>801</height>
+      <height>711</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QWidget" name="view_widget" native="true"/>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>30</y>
+      <width>261</width>
+      <height>431</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QWidget" name="chart1_widget" native="true"/>
+     </item>
+     <item>
+      <widget class="QWidget" name="chart2_widget" native="true"/>
      </item>
     </layout>
    </widget>
@@ -317,7 +328,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1145</width>
+     <width>1192</width>
      <height>20</height>
     </rect>
    </property>
