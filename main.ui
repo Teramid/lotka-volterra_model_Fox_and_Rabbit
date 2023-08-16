@@ -48,13 +48,25 @@
      <item>
       <widget class="QSlider" name="worldSize_horizontalSlider">
        <property name="minimum">
-        <number>10</number>
+        <number>1</number>
        </property>
        <property name="maximum">
-        <number>300</number>
+        <number>30</number>
+       </property>
+       <property name="singleStep">
+        <number>10</number>
+       </property>
+       <property name="tracking">
+        <bool>true</bool>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="tickPosition">
+        <enum>QSlider::NoTicks</enum>
+       </property>
+       <property name="tickInterval">
+        <number>10</number>
        </property>
       </widget>
      </item>
@@ -310,7 +322,7 @@
       <x>920</x>
       <y>30</y>
       <width>261</width>
-      <height>431</height>
+      <height>511</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">

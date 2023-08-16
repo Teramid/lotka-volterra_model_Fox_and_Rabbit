@@ -1,5 +1,4 @@
 import sys
-from matplotlib import markers
 from matplotlib.colors import ListedColormap
 import numpy as np
 import PyQt6.QtWidgets as qtw
@@ -40,7 +39,7 @@ class UI(qtw.QMainWindow):
         self.simulationSpeed_horizontalSlider = self.findChild(qtw.QSlider, "simulationSpeed_horizontalSlider")
         
         # Set slider
-        self.worldSize_horizontalSlider.setValue(int(self.worldSize_label.text()))
+        self.worldSize_horizontalSlider.setValue(int(int(self.worldSize_label.text())/10))
         self.initialRabbit_horizontalSlider.setValue(int(self.initialRabbits_label.text()))
         self.initialFoxes_horizontalSlider.setValue(int(self.initialFoxes_label.text()))
         self.breedingRabbits_horizontalSlider.setValue(int(1000*float(self.breedingRabbits_label.text())))
@@ -48,6 +47,8 @@ class UI(qtw.QMainWindow):
         self.mortalityFoxes_horizontalSlider.setValue(int(1000*float(self.mortalityFoxes_label.text())))
         self.effectivenessFoxes_horizontalSlider.setValue(int(1000*float(self.effectivenessFoxes_label.text())))
         self.simulationSpeed_horizontalSlider.setValue(int(10*float(self.simulationSpeed_label.text())))
+        
+
         
         # Move the slider
         self.worldSize_horizontalSlider.valueChanged.connect(self.slide_worldSize)
@@ -100,12 +101,14 @@ class UI(qtw.QMainWindow):
         self.fig1 = Figure()
         self.ax1 = self.fig1.add_subplot()
         self.ax1.set(xlim=(0, 10), ylim=(0,30))
-        self.plot1 = self.ax1.plot(0, 0, linewidth= 1)
         
+        self.plot1 = self.ax1.plot(0, 0, linewidth= 1)
+        self.ax1.set_xlabel("rabbits population")
+        self.ax1.set_ylabel("foxes population")
         self.canvas1 = FigureCanvas(self.fig1)
         self.layout1 = qtw.QVBoxLayout(self.chart1_widget)
         self.layout1.addWidget(self.canvas1)
-        self.fig1.tight_layout(pad=4)
+        self.fig1.tight_layout(pad=7)
         
         self.chart_2_datas_rabbit = np.array([], dtype=[('population', '<i4'),('time', '<i4')])
         self.chart_2_datas_fox = np.array([], dtype=[('population', '<i4'),('time', '<i4')])
@@ -114,11 +117,14 @@ class UI(qtw.QMainWindow):
         self.ax2 = self.fig2.add_subplot()
         self.ax2.set(xlim=(0, 100), ylim=(0,40))
         self.plot2 = self.ax2.plot(0, 0, linewidth = 1)
+        self.ax2.set_xticks([])
+        self.ax2.set_xlabel("time")
+        self.ax2.set_ylabel("population")
         
         self.canvas2 = FigureCanvas(self.fig2)
         self.layout2 = qtw.QVBoxLayout(self.chart2_widget)
         self.layout2.addWidget(self.canvas2)
-        self.fig2.tight_layout(pad=4)
+        self.fig2.tight_layout(pad=7)
         
         
         # Define the button
@@ -153,8 +159,8 @@ class UI(qtw.QMainWindow):
         
     # Slider functions
     def slide_worldSize(self,value):
-        self.worldSize_label.setText(str(value))
-        self.worldSize=int(value)
+        self.worldSize_label.setText(str(10*value))
+        self.worldSize=int(10*value)
         #self.redraw_view()
         
         self.matrixSim = np.zeros((self.worldSize, self.worldSize), dtype=int)
@@ -216,6 +222,8 @@ class UI(qtw.QMainWindow):
     
     
     def update_chart_2_and_1(self,rabbit_number_temp,fox_number_temp):
+
+        
         population_dependency_temp = np.array([(rabbit_number_temp,fox_number_temp)], dtype=[('population_fox', '<f4'), ('population_rabbit', '<f4')])
         
         rabbit_number_temp = np.array([(rabbit_number_temp, len(self.chart_2_datas_rabbit))], dtype=[('population', '<f4'), ('time', '<i4')])
@@ -234,16 +242,6 @@ class UI(qtw.QMainWindow):
             self.chart_2_datas_fox['time'] = np.arange(len(self.chart_2_datas_fox))
             
             self.population_dependency = np.append(self.population_dependency[1:], population_dependency_temp, axis=0)
-            
-            
-        
-        self.ax2.clear()
-        ylim = (int(max(max(self.chart_2_datas_rabbit['population']), max(self.chart_2_datas_fox['population'])) / 10) + 1) * 10
-        self.ax2.set(xlim=(0, 100), ylim=(0,ylim))
-        self.ax2.plot('time', 'population',data=self.chart_2_datas_rabbit, color= 'green', linewidth = 1)
-        self.ax2.plot('time', 'population',data=self.chart_2_datas_fox,color= 'red', linewidth = 1)
-        
-        self.canvas2.draw_idle()
         
         
         self.ax1.clear()
@@ -251,17 +249,27 @@ class UI(qtw.QMainWindow):
         xlim = (int(max(self.population_dependency['population_fox'])/10)+1) * 10
         self.ax1.set(xlim=(0, xlim), ylim=(0,ylim))
         self.ax1.plot('population_fox', 'population_rabbit','bo', data=self.population_dependency, markersize= 3)
-        
+        self.ax1.set_xlabel("rabbits population")
+        self.ax1.set_ylabel("foxes population")
         self.canvas1.draw_idle()
             
+        
+        self.ax2.clear() 
+        ylim = (int(max(max(self.chart_2_datas_rabbit['population']), max(self.chart_2_datas_fox['population'])) / 10) + 1) * 10
+        self.ax2.set(xlim=(0, 100), ylim=(0,ylim))
+        self.ax2.plot('time', 'population',data=self.chart_2_datas_rabbit, color= 'green', linewidth = 1, label = "Rabbit")
+        self.ax2.plot('time', 'population',data=self.chart_2_datas_fox,color= 'red', linewidth = 1, label = "Fox")
+        self.ax2.set_xticks([])
+        self.ax2.set_xlabel("time")
+        self.ax2.set_ylabel("population [%]")
+        self.ax2.legend()
+        self.canvas2.draw_idle()
 
             
-    
+
     def update_model(self):
-        def random_move(x,y):
-            direction = np.random.choice(['up_left', 'up', 'up_right', 
-                                        'left', 'right',
-                                        'down_left', 'down', 'down_right'])
+        def random_move(x,y, directions_available):
+            direction = np.random.choice(directions_available)
             if direction == 'up':
                 x = max(x - 1, 0)
                 
@@ -289,53 +297,61 @@ class UI(qtw.QMainWindow):
             elif direction == 'down_right':
                 x = min(x + 1, self.worldSize - 1)
                 y = min(y + 1, self.worldSize - 1)
-            return x,y
-        rabbit_number_temp = np.count_nonzero(self.matrixSim == 2)/(self.worldSize)
-        fox_number_temp = np.count_nonzero(self.matrixSim == 1)/(self.worldSize)
-        print(f"Rabbit: {rabbit_number_temp}%, fox: {fox_number_temp}%")
+                
+            directions_available.remove(direction)
+            return x,y, directions_available
+        
+        
+        
+        rabbit_number_temp = (np.count_nonzero(self.matrixSim == 2)/(self.worldSize**2))*100
+        fox_number_temp = (np.count_nonzero(self.matrixSim == 1)/(self.worldSize**2))*100
+        #print(f"world size: {self.worldSize}, Rabbit: {rabbit_number_temp}%, fox: {fox_number_temp}%")
         self.update_chart_2_and_1(rabbit_number_temp,fox_number_temp)
         
+        directions_available_arr = ['up_left', 'up', 'up_right', 
+                                    'left', 'right',
+                                    'down_left', 'down', 'down_right']
         for value in [1,2]:
             x, y = np.where(self.matrixSim == value)
-            self.matrixSim[x,y] = 0
+            
             
             for i in range(max(len(x),len(y))):
                 new_x, new_y = x[i],y[i]
-                new_x, new_y = random_move(new_x, new_y)
-                status = 0
-                if value == 2 and np.random.rand(1,1) <= self.breedingRabbits:
-                    newBorn_x, newBorn_y = random_move(new_x, new_y)
-                    stat = 0
-                    while self.matrixSim[newBorn_x, newBorn_y] != 0 and stat < 15:
-                        newBorn_x, newBorn_y = random_move(new_x, new_y)
-                        stat +=1
+                self.matrixSim[x[i],y[i]] = 0
+                directions_available = directions_available_arr.copy()
+                
+                new_x, new_y, directions_available = random_move(new_x, new_y, directions_available)
+                
+                if value == 2 and np.random.rand() <= self.breedingRabbits:
+                    directions_available = directions_available_arr.copy()
+                    newBorn_x, newBorn_y = x[i], y[i]
                     self.matrixSim[newBorn_x, newBorn_y] = value
-                while status<20:
-                    new_x, new_y = random_move(new_x, new_y)
+                    
+                    
+                directions_available = directions_available_arr.copy()
+                
+                while directions_available:
+                    new_x, new_y, directions_available = random_move(new_x, new_y, directions_available)
                     if self.matrixSim[new_x, new_y] == 0:
-                        status = 100
-                        if value == 2 and np.random.rand(1,1) <= self.breedingRabbits:
+                        directions_available = []
+                        if value == 2 and np.random.rand() <= self.breedingRabbits:
                             newBorn_x, newBorn_y = x[i], y[i]
                             x = np.append(x, newBorn_x)
                             y = np.append(y, newBorn_y)
-                        
-                    elif value == 1 and self.matrixSim[new_x, new_y] == 1:
-                        status+=1
-                    elif value == 2 and self.matrixSim[new_x, new_y] == 2:
-                        status+=1
+                            
+                            
                     elif value == 1 and self.matrixSim[new_x, new_y] == 2:
-                        if np.random.rand(1,1) < self.effectivenessFoxes:
-                            status = 100
-                            if np.random.rand(1,1) < self.breedingFoxes:
-                                newBorn_x, newBorn_y = random_move(new_x, new_y)
-                                while self.matrixSim[newBorn_x, newBorn_y] != 0 and newBorn_x != new_x and newBorn_y != new_y:
-                                    newBorn_x, newBorn_y = random_move(new_x, new_y)
+                        if np.random.rand() < self.effectivenessFoxes:
+                            directions_available = []
+                            
+                            if np.random.rand() < self.breedingFoxes:
+                                newBorn_x, newBorn_y = x[i], y[i]
                                 self.matrixSim[newBorn_x, newBorn_y] = value
                                 
                         else:
-                            status+=1
+                            new_x, new_y = x[i], y[i]
                     else:
-                        status+=1
+                        new_x, new_y = x[i], y[i]
                 if (value == 1 and np.random.rand(1,1) > self.mortalityFoxes) or value==2:   
                     self.matrixSim[new_x, new_y] = value
                 else: pass
@@ -343,6 +359,8 @@ class UI(qtw.QMainWindow):
             
         self.plot.set_array(self.matrixSim.ravel())
         self.canvas.draw_idle()
+        
+
         
     
     def start_button_down(self):
